@@ -107,6 +107,29 @@
         padding: 20px 15px;
       }
     }
+    /* Fullscreen overlay for loader */
+    #loaderOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #00c851;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
   </style>
 </head>
 <body>
@@ -124,6 +147,14 @@
   <label for="email">Email Address</label>
   <input type="email" id="email" name="email" placeholder="Enter your email address">
 
+  <label for="intent">Want to *</label>
+  <select id="intent" name="intent" required>
+    <option value="">Select your intent</option>
+    <option value="Buy">Buy</option>
+    <option value="Sell">Sell</option>
+    <option value="Rent">Rent</option>
+  </select>
+
   <label for="propertyType">Property Type *</label>
   <select id="propertyType" name="propertyType" required>
     <option value="">Select property type</option>
@@ -139,19 +170,8 @@
     <option value="Under-construction">Under-construction</option>
   </select>
 
-  <label for="intent">Want to *</label>
-  <select id="intent" name="intent" required>
-    <option value="">Select your intent</option>
-    <option value="Buy">Buy</option>
-    <option value="Sell">Sell</option>
-    <option value="Rent">Rent</option>
-  </select>
-
   <label for="city">City *</label>
   <input type="text" id="city" name="city" required placeholder="Enter the city">
-
-  <label for="area">Area *</label>
-  <input type="text" id="area" name="area" required placeholder="Enter the locality or area">
 
   <label for="budget">Budget / Asking</label>
   <input type="text" id="budget" name="budget" placeholder="Enter your budget or asking price">
@@ -162,37 +182,39 @@
   <button type="submit">Submit</button>
 </form>
 
-    <div class="loader" id="loader"></div>
+    <div id="loaderOverlay">
+  <div class="loader"></div>
+</div>
   </div>
 
   <script>
     const form = document.getElementById('enquiryForm');
-    const loader = document.getElementById('loader');
-    const formWrapper = document.getElementById('formWrapper');
+const loaderOverlay = document.getElementById('loaderOverlay');
+const formWrapper = document.getElementById('formWrapper');
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
 
-      loader.style.display = 'block';
+  loaderOverlay.style.display = 'flex'; // show fullscreen loader
 
-      const formData = new FormData(form);
-      const data = new URLSearchParams(formData);
+  const formData = new FormData(form);
+  const data = new URLSearchParams(formData);
 
-      fetch('https://script.google.com/macros/s/AKfycbwTp9UnBF9dy9GxaY8kRsNLkc3LB7qhwxEptJJBCk0uzU9adi5JPq7qwhSHf7oKz8MR/exec', {
-        method: 'POST',
-        body: data
-      })
-      .then(response => response.json())
-      .then(result => {
-        loader.style.display = 'none';
-        formWrapper.innerHTML = `<div class="message">✅ Thank you! Your enquiry has been submitted successfully.</div>`;
-      })
-      .catch(error => {
-        loader.style.display = 'none';
-        formWrapper.innerHTML = `<div class="message">❌ Oops! Something went wrong. Please try again later.</div>`;
-        console.error("Form submission error:", error);
-      });
-    });
+  fetch('https://script.google.com/macros/s/AKfycbwTp9UnBF9dy9GxaY8kRsNLkc3LB7qhwxEptJJBCk0uzU9adi5JPq7qwhSHf7oKz8MR/exec', {
+    method: 'POST',
+    body: data
+  })
+  .then(response => response.json())
+  .then(result => {
+    loaderOverlay.style.display = 'none';
+    formWrapper.innerHTML = `<div class="message">✅ Thank you! Your enquiry has been submitted successfully.</div>`;
+  })
+  .catch(error => {
+    loaderOverlay.style.display = 'none';
+    formWrapper.innerHTML = `<div class="message">❌ Oops! Something went wrong. Please try again later.</div>`;
+    console.error("Form submission error:", error);
+  });
+});
   </script>
 </body>
 </html>
